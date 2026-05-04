@@ -15,7 +15,7 @@ def generate_report():
 
 
     report = {
-        "title": f"Risk Report: {user_input}",
+        "title": f"{user_input} Risk Analysis Report",
 
         "executive_summary": f"This report provides a high-level summary of {user_input} and its potential impact on the organization.",
 

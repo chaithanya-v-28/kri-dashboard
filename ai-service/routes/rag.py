@@ -1,17 +1,18 @@
 from flask import Blueprint, request, jsonify
 import chromadb
+from chromadb.utils import embedding_functions
 
 rag_bp = Blueprint("rag", __name__)
 
+embedding_function = embedding_functions.SentenceTransformerEmbeddingFunction(
+    model_name="all-MiniLM-L6-v2"
+)
 
-client = chromadb.Client()
+client = chromadb.PersistentClient(path="./chroma_db")
 
-
-collection = client.get_or_create_collection("rag_collection")
-
-collection.add(
-    documents=["Cybersecurity risk includes phishing, malware, and data breaches"],
-    ids=["1"]
+collection = client.get_or_create_collection(
+    name="kri_docs",
+    embedding_function=embedding_function
 )
 
 @rag_bp.route("/rag", methods=["POST"])
@@ -28,4 +29,7 @@ def rag_query():
         n_results=2
     )
 
-    return jsonify(results)
+    return jsonify({
+        "query": query,
+        "results": results["documents"][0]
+    })

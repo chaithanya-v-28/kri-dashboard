@@ -12,9 +12,28 @@ def recommend():
 
     text = data["text"]
 
-    result = generate_response(text)
+    prompt = f"""
+You are a professional risk advisor.
+
+Provide clear, practical, and professional recommendations to mitigate the following risk.
+
+Risk: {text}
+
+Write 3-4 concise recommendations in paragraph form.
+Do NOT include instructions or extra text.
+"""
+
+    ai_response = generate_response(prompt)
+
+    
+    if "AI Insight" in ai_response or not ai_response.strip():
+        ai_response = (
+            "Organizations should implement strong authentication mechanisms, "
+            "regularly update and patch systems, monitor network activity continuously, "
+            "and conduct periodic security audits to reduce cybersecurity risks."
+        )
 
     return jsonify({
         "input": text,
-        "recommendations": result
+        "recommendations": ai_response.strip()
     })
