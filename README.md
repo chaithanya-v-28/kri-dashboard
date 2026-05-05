@@ -1,133 +1,88 @@
-# AI Service — KRI Dashboard
-
-A modular AI backend service built with Flask that provides multiple endpoints for risk analysis, recommendations, report generation, document analysis, batch processing, and optional RAG-based querying.
+#  KRI Dashboard Backend
 
 ---
 
-# 🚀 Overview
+##  Overview
 
-This service is designed as part of the **KRI Dashboard** to process risk-related inputs using AI models. It supports:
+This project is an AI-powered backend service built using Flask.
+It is part of the **KRI (Key Risk Indicator) Dashboard** and provides intelligent risk analysis using AI.
 
-* Async report generation
-* Streaming responses (SSE)
-* Batch processing with rate limiting
-* Document analysis with structured outputs
-* Modular architecture (routes + services)
-* Unit testing using pytest
+The system processes user inputs and generates:
 
----
-
-#  Features
-
-### Core APIs
-
-* Describe risks
-* Recommend mitigation strategies
-* Generate structured reports (async)
-* Stream report generation (SSE)
-* Analyse documents (insights + risks)
-* Batch process multiple inputs
-
-### Advanced
-
-* Async background processing
-* Streaming with EventSource
-* Error handling + fallback responses
-* Unit testing with mocks
-* Scalable service structure
+* Risk descriptions
+* Recommendations
+* Structured reports
+* Document insights
+* Batch analysis
+* Knowledge retrieval (RAG)
 
 ---
 
-# 📦 Prerequisites
+##  Features
 
-Make sure your system has:
+* 🔹 AI Risk Description
+* 🔹 AI Recommendations
+* 🔹 Report Generation (Async + Structured Output)
+* 🔹 Document Analysis (Insights + Risks)
+* 🔹 Batch Processing (Multiple Inputs)
+* 🔹 RAG (Retrieval-Augmented Generation using ChromaDB)
+* 🔹 Streaming Support (SSE)
+* 🔹 Modular Architecture (Routes + Services)
 
-* Python 3.10+ (You are using 3.14 ✔)
+---
+
+## Prerequisites
+
+* Python 3.10+
 * pip installed
-* VS Code (recommended)
-* Internet connection (for AI APIs)
+* Internet connection (for Groq API)
+* Git (optional)
 
 ---
 
-# ⚙️ Setup Instructions
-
-## 1. Navigate to service
+##  Installation
 
 ```bash
-cd ai-service
+git clone https://github.com/chaithanya-v-28/kri-dashboard.git
+cd kri-dashboard/ai-service
+pip install flask flask-cors python-dotenv requests chromadb sentence-transformers
 ```
 
 ---
 
-## 2. Create virtual environment (recommended)
+##  Environment Variables
 
-```bash
-python -m venv venv
-venv\Scripts\activate
+Create a `.env` file inside `ai-service`:
+
+```
+GROQ_API_KEY=your_groq_api_key_here
 ```
 
 ---
 
-## 3. Install dependencies
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-## 4. Install missing packages (if errors occur)
-
-```bash
-pip install flask flask-cors pytest python-dotenv
-```
-
----
-
-# 🔐 Environment Variables
-
-Create a `.env` file inside `ai-service/`
-
-Example:
-
-```
-GROQ_API_KEY=your_api_key_here
-HF_TOKEN=your_huggingface_token
-```
-
-### Notes:
-
-* GROQ_API_KEY → required for AI responses
-* HF_TOKEN → optional (for embeddings / RAG)
-* If not set → fallback/mock responses will be used
-
----
-
-# ▶️ Run the Application
+##  Run the Server
 
 ```bash
 python app.py
 ```
 
----
-
-# 🌐 Server URL
+Server runs at:
 
 ```
-http://127.0.0.1:5555
+http://127.0.0.1:5555/
 ```
 
+
+
+##  API Endpoints
+
 ---
 
-# 📡 FULL API REFERENCE
+### 1. Describe Risk
 
----
+**POST** `/describe`
 
-## 1. 🔹 POST `/describe`
-
-Generate AI description of a risk.
-
-### Request
+**Request**
 
 ```json
 {
@@ -135,13 +90,23 @@ Generate AI description of a risk.
 }
 ```
 
----
+**Response**
 
-## 2. 🔹 POST `/recommend`
+```json
+{
+  "title": "Cybersecurity Risk",
+  "description": "Cybersecurity risks involve threats to systems, networks, and data.",
+  "risk_level": "Medium",
+  "generated_at": "timestamp"
+}
+```
 
-Generate recommendations.
 
-### Request
+### 2. Recommend
+
+**POST** `/recommend`
+
+**Request**
 
 ```json
 {
@@ -149,13 +114,21 @@ Generate recommendations.
 }
 ```
 
----
+**Response**
 
-## 3. 🔹 POST `/generate-report` (ASYNC)
+```json
+{
+  "input": "Cybersecurity risk",
+  "recommendations": "Enable multi-factor authentication, update systems regularly, and monitor network activity."
+}
+```
 
-Starts report generation.
 
-### Request
+### 3. Generate Report
+
+**POST** `/generate-report`
+
+**Request**
 
 ```json
 {
@@ -163,103 +136,58 @@ Starts report generation.
 }
 ```
 
-### Response
+**Response**
 
 ```json
 {
-  "task_id": "abc123",
-  "status": "processing"
-}
-```
-
----
-
-## 4. 🔹 GET `/report-result/<task_id>`
-
-Fetch result.
-
-### Response (processing)
-
-```json
-{
-  "status": "processing"
-}
-```
-
-### Response (completed)
-
-```json
-{
-  "status": "completed",
-  "result": "AI generated report"
-}
-```
-
----
-
-## 5. 🔹 GET `/generate-report-stream` (SSE)
-
-Streams response word-by-word.
-
-### Example
-
-```
-/generate-report-stream?text=cybersecurity
-```
-
-### Output
-
-```
-data: AI
-data: generated
-data: report
-```
-
----
-
-## 6. 🔹 POST `/analyse-document`
-
-Extract insights + risks.
-
-### Request
-
-```json
-{
-  "text": "System has vulnerabilities"
-}
-```
-
-### Response
-
-```json
-{
-  "input": "...",
-  "findings": [
-    {
-      "type": "insight",
-      "description": "..."
-    },
-    {
-      "type": "risk",
-      "description": "..."
-    }
+  "title": "Cybersecurity Risk Analysis Report",
+  "executive_summary": "...",
+  "overview": "...",
+  "top_items": [
+    "Weak authentication",
+    "Unpatched software",
+    "Lack of monitoring"
+  ],
+  "recommendations": [
+    {"action": "Enable MFA", "priority": "High"}
   ],
   "generated_at": "timestamp"
 }
 ```
 
----
 
-## 7. 🔹 POST `/batch-process`
+### 4. Analyse Document
 
-Process multiple inputs.
+**POST** `/analyse-document`
 
-### Rules
+**Request**
 
-* Max 20 items
-* 100ms delay per item
+```json
+{
+  "text": "System lacks encryption"
+}
+```
 
-### Request
+**Response**
+
+```json
+{
+  "input": "System lacks encryption",
+  "findings": [
+    {"type": "insight", "description": "Sensitive data is exposed"},
+    {"type": "risk", "description": "High chance of data breach"}
+  ],
+  "generated_at": "timestamp"
+}
+```
+
+
+
+### 5. Batch Process
+
+**POST** `/batch-process`
+
+**Request**
 
 ```json
 {
@@ -267,157 +195,87 @@ Process multiple inputs.
 }
 ```
 
-### Response
+**Response**
 
 ```json
 {
   "count": 2,
   "results": [
-    {
-      "input": "risk1",
-      "output": "AI Insight..."
-    }
+    {"input": "risk1", "output": "..."},
+    {"input": "risk2", "output": "..."}
   ]
 }
 ```
 
----
 
-## 8. 🔹 POST `/rag` (Optional)
+### 6. RAG Query
 
-RAG-based query (if implemented).
+**POST** `/rag`
+
+**Request**
 
 ```json
 {
-  "query": "cybersecurity risk"
+  "query": "cybersecurity"
 }
 ```
 
----
+**Response**
 
-#  Testing (Pytest)
+```json
+{
+  "query": "cybersecurity",
+  "results": [
+    "Cybersecurity risks include phishing, malware, and data breaches."
+  ]
+}
 
-Run from root folder:
 
-```bash
+## Performance & Optimization
+
+* Preloaded embedding model for faster responses
+* Optional Redis caching
+* Reduced prompt size for efficiency
+* Streaming support for real-time responses
+
+
+## Testing
+
+Run tests:
+
+bash
 pytest
-```
 
----
 
-## ✔ What is tested?
+## Status
 
-* API responses
-* Error handling
-* Async results
-* Streaming output
-* AI mocking
+✔ APIs implemented
+✔ Async processing working
+✔ Streaming enabled
+✔ Batch processing added
+✔ Unit tests completed
+✔ Demo ready
 
----
 
-# ⚠️ Common Issues & Fixes
-
----
-
-## ❌ ModuleNotFoundError
-
-Fix:
-
-```python
-import sys, os
-sys.path.append(os.path.abspath("ai-service"))
-```
-
----
-
-## ❌ Port already in use
-
-Change in `app.py`:
-
-```python
-app.run(port=5556)
-```
-
----
-
-## ❌ AI returns "Error from AI service"
-
-Check:
-
-* API key
-* Internet connection
-* groq_client.py logic
-
----
-
-## ❌ pytest shows 0 tests
-
-Check:
-
-* folder name → `tests/`
-* file name → `test_*.py`
-
----
-
-# 📁 Project Structure
-
-```
-ai-service/
-│
-├── app.py
-│
-├── routes/
-│   ├── describe.py
-│   ├── recommend.py
-│   ├── generate_report.py
-│   ├── analyse_document.py
-│   ├── batch_process.py
-│
-├── services/
-│   ├── groq_client.py
-│   ├── ai_service.py
-│
-├── prompts/
-├── templates/
-├── .env
-└── requirements.txt
-```
-
----
-
-#  Architecture
-
-```
-Client → Routes → Services → AI API → Response
-```
-
----
-
-#  Future Improvements
+## Future Improvements
 
 * Add database (PostgreSQL / MongoDB)
 * Add authentication (JWT)
-* Add frontend (React dashboard)
-* Improve AI prompts
-* Add caching (Redis)
+* Build React frontend dashboard
+* Improve AI prompt quality
+* Enable Redis caching fully
 * Deploy to cloud (AWS / Render)
 
----
 
-#  Author
+## Author
 
 Chaithanya V
 AI Developer Intern
 
----
 
-# ✅ Status
+## Conclusion
 
-✔ APIs implemented
-✔ Async processing
-✔ Streaming working
-✔ Batch processing added
-✔ Unit tests completed
-✔ Ready for deployment
+This project demonstrates how AI can be integrated into backend systems to provide real-time risk analysis, intelligent recommendations, and structured reporting.
 
----
+
+
