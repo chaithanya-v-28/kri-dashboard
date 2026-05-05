@@ -9,3 +9,4 @@ GROQ_API_KEY = os.getenv("GROQ_API_KEY")
 def generate_response(prompt):
     
     return f"AI Insight: {prompt} handled successfully"
+print("API KEY:", GROQ_API_KEY)
